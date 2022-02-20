@@ -1,71 +1,70 @@
 #include "line_processor.h"
-#include "util.h"
 
 /*
  *
  */
-void runLineProcessor(void) {
+void run_line_processor(void) {
     struct LineProcessor *lp = malloc(sizeof(struct LineProcessor));
     
-    initLineProcessor(lp);
+    init_line_processor(lp);
 
-    while (*(lp->isRunning)) {
-        readInput(lp);
-        convertLineSeperator(lp);
-        convertPlusSign(lp);
-        printOutput(lp);
+    while (*(lp->is_running)) {
+        read_input(lp);
+        convert_line_seperator(lp);
+        convert_plus_sign(lp);
+        print_output(lp);
     }
 
-    freeLineProcessor(lp);
+    free_line_processor(lp);
 }
 
 /*
  * Initialize the line processor struct.
  */
-void initLineProcessor(struct LineProcessor *lp) {
-    lp->isRunning = malloc(sizeof(int));
-    lp->processIndex = malloc(sizeof(int));
-    lp->outputIndex = malloc(sizeof(int));
-    lp->currentIndex = malloc(sizeof(int));
-    lp->inputCount = malloc(sizeof(int));
-    lp->processCount = malloc(sizeof(int));
-    lp->outputCount = malloc(sizeof(int));
-    lp->bufferSize = malloc(sizeof(int));
-    lp->outputSize = malloc(sizeof(int));
-    *(lp->isRunning) = 1;
-    *(lp->processIndex) = 0;
-    *(lp->outputIndex) = 0;
-    *(lp->currentIndex) = 0;
-    *(lp->inputCount) = 0;
-    *(lp->processCount) = 0;
-    *(lp->outputCount) = 0;
-    *(lp->bufferSize) = 65536;
-    *(lp->outputSize) = 10;
-    lp->inputBuffer = malloc(sizeof(char) * *(lp->bufferSize));
-    lp->processBuffer = malloc(sizeof(char) * *(lp->bufferSize));
-    lp->outputBuffer = malloc(sizeof(char) * *(lp->bufferSize));
+void init_line_processor(struct LineProcessor *lp) {
+    lp->is_running = malloc(sizeof(int));
+    lp->process_index = malloc(sizeof(int));
+    lp->output_index = malloc(sizeof(int));
+    lp->current_index = malloc(sizeof(int));
+    lp->input_count = malloc(sizeof(int));
+    lp->process_count = malloc(sizeof(int));
+    lp->output_count = malloc(sizeof(int));
+    lp->buffer_size = malloc(sizeof(int));
+    lp->output_size = malloc(sizeof(int));
+    *(lp->is_running) = 1;
+    *(lp->process_index) = 0;
+    *(lp->output_index) = 0;
+    *(lp->current_index) = 0;
+    *(lp->input_count) = 0;
+    *(lp->process_count) = 0;
+    *(lp->output_count) = 0;
+    *(lp->buffer_size) = 65536;
+    *(lp->output_size) = 10;
+    lp->input_buffer = malloc(sizeof(char) * *(lp->buffer_size));
+    lp->process_buffer = malloc(sizeof(char) * *(lp->buffer_size));
+    lp->output_buffer = malloc(sizeof(char) * *(lp->buffer_size));
 }
 
 /*
  *
  */
-void readInput(struct LineProcessor *lp) {
-    int isFinished = 0;
+void read_input(struct LineProcessor *lp) {
+    int is_finished = 0;
     int index = 0;
     char ch = '\0';
 
-    while (!isFinished) {
+    while (!is_finished) {
         ch = getchar();
-        *(lp->inputBuffer + index) = ch;
+        *(lp->input_buffer + index) = ch;
 
         if (ch == '\n' || ch == EOF) {
-            isFinished = 1;
+            is_finished = 1;
             if (ch == EOF) {
-                *(lp->isRunning) = 0;
+                *(lp->is_running) = 0;
             }
         }
 
-        *(lp->inputCount) += 1;
+        *(lp->input_count) += 1;
         index += 1;
     }
 }
@@ -73,75 +72,75 @@ void readInput(struct LineProcessor *lp) {
 /*
  *
  */
-void convertLineSeperator(struct LineProcessor *lp) {
+void convert_line_seperator(struct LineProcessor *lp) {
     char ch = '\0';
 
-    for (int i = 0; i < *(lp->inputCount); i++) {
-        ch = *(lp->inputBuffer + i);
+    for (int i = 0; i < *(lp->input_count); i++) {
+        ch = *(lp->input_buffer + i);
 
         if (ch == '\n') {
             ch = ' ';
         }
         
         if (ch != '\r' && ch != EOF) {
-            *(lp->processBuffer + *(lp->processIndex)) = ch;
-            *(lp->processIndex) += 1;
+            *(lp->process_buffer + *(lp->process_index)) = ch;
+            *(lp->process_index) += 1;
         }
     }
 
-    *(lp->processCount) = *(lp->inputCount);
-    *(lp->inputCount) = 0;
+    *(lp->process_count) = *(lp->input_count);
+    *(lp->input_count) = 0;
 }
 
 /*
  *
  */
-void convertPlusSign(struct LineProcessor *lp) {
-    int isLoadOutput = 0;
-    int isPrevChar = 0;
+void convert_plus_sign(struct LineProcessor *lp) {
+    int is_load_output = 0;
+    int is_prev_char = 0;
     char ch = '\0';
 
-    for (int i = 0; i < *(lp->processCount); i++) {
-        ch = *(lp->processBuffer + *(lp->processIndex) - *(lp->processCount) + i);
+    for (int i = 0; i < *(lp->process_count); i++) {
+        ch = *(lp->process_buffer + *(lp->process_index) - *(lp->process_count) + i);
 
         if (ch == '+') {
-            if (isPrevChar) {
-                isPrevChar = 0;
-                *(lp->outputBuffer + *(lp->outputIndex) - 1) = '^';
+            if (is_prev_char) {
+                is_prev_char = 0;
+                *(lp->output_buffer + *(lp->output_index) - 1) = '^';
             } else {
-                isPrevChar = 1;
-                isLoadOutput = 1;
+                is_prev_char = 1;
+                is_load_output = 1;
             }
         } else {
-            if (isPrevChar) {
-                isPrevChar = 0;
+            if (is_prev_char) {
+                is_prev_char = 0;
             }
-            isLoadOutput = 1;
+            is_load_output = 1;
         }
 
-        if (isLoadOutput) {
-            *(lp->outputBuffer + *(lp->outputIndex)) = ch;
-            *(lp->outputIndex) += 1;
-            *(lp->outputCount) += 1;
-            isLoadOutput = 0;
+        if (is_load_output) {
+            *(lp->output_buffer + *(lp->output_index)) = ch;
+            *(lp->output_index) += 1;
+            *(lp->output_count) += 1;
+            is_load_output = 0;
         }
     }
 
     // The location of this reset may need to be changed.
-    *(lp->processCount) = 0;
+    *(lp->process_count) = 0;
 }
 
 /*
  *
  */
-void printOutput(struct LineProcessor *lp) {
-    while (*(lp->outputCount) >= *(lp->outputSize)) {
-        for (int i = 0; i < *(lp->outputSize); i++) {
-            putchar(*(lp->outputBuffer + *(lp->currentIndex) + i));
+void print_output(struct LineProcessor *lp) {
+    while (*(lp->output_count) >= *(lp->output_size)) {
+        for (int i = 0; i < *(lp->output_size); i++) {
+            putchar(*(lp->output_buffer + *(lp->current_index) + i));
             fflush(stdout);
         }
-        *(lp->currentIndex) += *(lp->outputSize);
-        *(lp->outputCount) -= *(lp->outputSize);
+        *(lp->current_index) += *(lp->output_size);
+        *(lp->output_count) -= *(lp->output_size);
         printf("\n");
         fflush(stdout);
     }
@@ -150,18 +149,18 @@ void printOutput(struct LineProcessor *lp) {
 /*
  * Free the line processor struct.
  */
-void freeLineProcessor(struct LineProcessor *lp) {
-    free(lp->isRunning);
-    free(lp->processIndex);
-    free(lp->outputIndex);
-    free(lp->currentIndex);
-    free(lp->inputCount);
-    free(lp->processCount);
-    free(lp->outputCount);
-    free(lp->bufferSize);
-    free(lp->outputSize);
-    free(lp->inputBuffer);
-    free(lp->processBuffer);
-    free(lp->outputBuffer);
+void free_line_processor(struct LineProcessor *lp) {
+    free(lp->is_running);
+    free(lp->process_index);
+    free(lp->output_index);
+    free(lp->current_index);
+    free(lp->input_count);
+    free(lp->process_count);
+    free(lp->output_count);
+    free(lp->buffer_size);
+    free(lp->output_size);
+    free(lp->input_buffer);
+    free(lp->process_buffer);
+    free(lp->output_buffer);
     free(lp);
 }

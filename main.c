@@ -4,7 +4,7 @@
  * Run the line processor.
  */
 int main(void) {
-    runLineProcessor();
+    run_line_processor();
 
     return 0;
 }
