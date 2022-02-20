@@ -7,9 +7,14 @@
 
 struct LineProcessor {
     int *isRunning;
-    int *beginIndex;
-    int *endIndex;
-    int *count;
+    // int *beginIndex;
+    // int *currentIndex;
+    int *processIndex;
+    int *outputIndex;
+    int *currentIndex;
+    int *inputCount;
+    int *processCount;
+    int *outputCount;
     int *bufferSize;
     int *outputSize;
     char *inputBuffer;
@@ -21,9 +26,13 @@ void runLineProcessor(void);
 
 void initLineProcessor(struct LineProcessor *lp);
 
-void getLineToProcess(struct LineProcessor *lp);
+void readInput(struct LineProcessor *lp);
 
-void outputLine(struct LineProcessor *lp); 
+void convertLineSeperator(struct LineProcessor *lp);
+
+void convertPlusSign(struct LineProcessor *lp);
+
+void printOutput(struct LineProcessor *lp); 
 
 void freeLineProcessor(struct LineProcessor *lp);
 
