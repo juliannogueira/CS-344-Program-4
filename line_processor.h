@@ -11,12 +11,15 @@
 
 struct LineProcessor {
     int *is_running;
+    int *is_end_sequence_char;
+    int *is_end_sequence;
     int *process_index;
     int *output_index;
     int *current_index;
     int *input_count;
     int *process_count;
     int *output_count;
+    int *input_buffer_size;
     int *buffer_size;
     int *output_size;
     int *input_t_term;
@@ -45,6 +48,8 @@ void run_line_processor(void);
 void init_line_processor(struct LineProcessor *lp);
 
 void init_line_processor_threads(struct LineProcessor *lp);
+
+void check_is_end_sequence(struct LineProcessor *lp, int index, char ch);
 
 void *read_input(void *arg);
 
